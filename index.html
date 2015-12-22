@@ -43,45 +43,45 @@
 
 <blockquote>
 <p>get the surface area of the bounding box according to the diagonal line’s vertex.</p>
+
+<pre><code>double getArea(double min_x, double max_x, double min_y, double max_y, double min_z, double max_z) {
+  double dx = max_x - min_x;
+  double dy = max_y - min_y;
+  double dz = max_z - min_z;
+  return 2 * (dx * dy + dx * dz + dy * dz);
+}
+</code></pre>
+
+<ul>
+<li>mergeBox()</li>
+</ul>
 </blockquote>
 
-<p><code>double getArea(double min_x, double max_x, double min_y, double max_y, double min_z, double max_z)</code>
-<code>{</code>
-  <code>double dx = max_x - min_x;</code>
-  <code>double dy = max_y - min_y;</code>
-  <code>double dz = max_z - min_z;</code>
-  <code>return 2 * (dx * dy + dx * dz + dy * dz);</code>
-<code>}</code></p>
-
-<ul>
-<li>
-<p>mergeBox()</p>
-
-<ul>
-<li>Input: bounding box1, bounding box2, bounding box3</li>
-<li>Output: void</li>
-</ul>
-</li>
-</ul>
+<pre><code>* Input: bounding box1, bounding box2, bounding box3
+* Output: void
+</code></pre>
 
 <blockquote>
 <p>reset the bounding box3’s attributes using the smallest and largest attributes from bounding box1 and bounding box2.</p>
-</blockquote>
 
-<p><code>void mergeBox(BBox&amp; b1, BBox&amp; b2, BBox* b3)</code>
-    <code>{</code>
-       <code>b3-&gt;min.x = std::min(b1.min.x, b2.min.x);</code>
-       <code>b3-&gt;max.x = std::max(b1.max.x, b2.max.x);</code>
-       <code>b3-&gt;min.y = std::min(b1.min.y, b2.min.y);</code>
-       <code>b3-&gt;max.y = std::max(b1.max.y, b2.max.y);</code>
-       <code>b3-&gt;min.z = std::min(b1.min.z, b2.min.z);</code>
-       <code>b3-&gt;max.z = std::max(b1.max.z, b2.max.z);</code>
-       <code>return;</code>
-    <code>}</code></p>
+<pre><code>void mergeBox(BBox&amp; b1, BBox&amp; b2, BBox* b3) {
+   b3-&gt;min.x = std::min(b1.min.x, b2.min.x);
+   b3-&gt;max.x = std::max(b1.max.x, b2.max.x);
+   b3-&gt;min.y = std::min(b1.min.y, b2.min.y);
+   b3-&gt;max.y = std::max(b1.max.y, b2.max.y);
+   b3-&gt;min.z = std::min(b1.min.z, b2.min.z);
+   b3-&gt;max.z = std::max(b1.max.z, b2.max.z);
+   return;
+}
+</code></pre>
 
 <ul>
-<li><p>getTreelet()</p></li>
-<li><p>updateNewCost()</p></li>
+<li>getTreelet()</li>
+</ul>
+</blockquote>
+
+<ul>
+<li>updateNewCost()</li>
 </ul>
 
 <p>Input: root of the BVH
