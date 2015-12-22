@@ -31,17 +31,21 @@
 <p>I have the following functions to realize the thought above:</p>
 
 <ul>
-<li>getArea() </li>
-</ul>
+<li>
+<p>getArea() </p>
 
-<p>Input:
-Output:</p>
+<ul>
+<li>Input: the maximum and minimum value of the vertex.</li>
+<li>Output: the surface area.</li>
+</ul>
+</li>
+</ul>
 
 <blockquote>
 <p>get the surface area of the bounding box according to the diagonal line’s vertex.</p>
 </blockquote>
 
-<p><code>double BVHAccel::getArea(double min_x, double max_x, double min_y, double max_y, double min_z, double max_z)</code>
+<p><code>double getArea(double min_x, double max_x, double min_y, double max_y, double min_z, double max_z)</code>
 <code>{</code>
   <code>double dx = max_x - min_x;</code>
   <code>double dy = max_y - min_y;</code>
@@ -50,13 +54,30 @@ Output:</p>
 <code>}</code></p>
 
 <ul>
-<li>mergeBox()</li>
+<li>
+<p>mergeBox()</p>
+
+<ul>
+<li>Input: bounding box1, bounding box2, bounding box3</li>
+<li>Output: void</li>
+</ul>
+</li>
 </ul>
 
-<p>Input: bounding box1, bounding box2, bounding box3
-Output: void</p>
-
+<blockquote>
 <p>reset the bounding box3’s attributes using the smallest and largest attributes from bounding box1 and bounding box2.</p>
+</blockquote>
+
+<p><code>void mergeBox(BBox&amp; b1, BBox&amp; b2, BBox* b3)</code>
+    <code>{</code>
+       <code>b3-&gt;min.x = std::min(b1.min.x, b2.min.x);</code>
+       <code>b3-&gt;max.x = std::max(b1.max.x, b2.max.x);</code>
+       <code>b3-&gt;min.y = std::min(b1.min.y, b2.min.y);</code>
+       <code>b3-&gt;max.y = std::max(b1.max.y, b2.max.y);</code>
+       <code>b3-&gt;min.z = std::min(b1.min.z, b2.min.z);</code>
+       <code>b3-&gt;max.z = std::max(b1.max.z, b2.max.z);</code>
+       <code>return;</code>
+    <code>}</code></p>
 
 <ul>
 <li><p>getTreelet()</p></li>
