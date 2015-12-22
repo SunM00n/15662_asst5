@@ -82,11 +82,14 @@
 
 <ul>
 <li>Input: the number of the leaves</li>
-<li>Output: void
-&gt; rearrange the leaves' partition to get the smallest cost arrangement</li>
+<li>Output: void</li>
 </ul>
 </li>
 </ul>
+
+<blockquote>
+<p>rearrange the leaves' partition to get the smallest cost arrangement</p>
+</blockquote>
 
 <pre><code>void optimizeTreelet(int n, std::vector&lt;BVHNode *&gt; leaves) {
   int num_subsets = pow(2, n) - 1;
@@ -131,15 +134,49 @@
 </code></pre>
 
 <ul>
-<li>updateNewCost()</li>
+<li>
+<p>updateCost()</p>
+
+<ul>
+<li>Input: node from the BVH</li>
+<li>Output: void</li>
+</ul>
+</li>
 </ul>
 
-<p>Input: root of the BVH
-Output: void</p>
+<blockquote>
+<p>for the node in the tree calculate the cost of each node according to it's children's cost</p>
+</blockquote>
 
-<p>for all the node in the tree
-    calculate the cost of each node according to it's children's cost
-end</p>
+<pre><code>void updateCost(BVHNode *root, std::vector&lt;BVHNode *&gt;leaves, int num_leaves) {
+
+    for (int i = 0; i &lt; num_leaves; i++) {
+        BVHNode *cur = leaves[i];
+        cur = cur-&gt;p;
+        while (cur != root) {
+            if (cur-&gt;cost == 0.0) {
+                if (cur-&gt;left-&gt;cost != 0.0 &amp;&amp; cur-&gt;right-&gt;cost != 0.0) {
+                    // Both left &amp; right propagated
+                    BBox *bb_cur = &amp;cur-&gt;bound;
+                    merge_bounds(cur-&gt;l-&gt;bb, cur-&gt;right-&gt;bb, bb_cur);
+                    cur-&gt;cost = Ct * cur-&gt;bb-&gt;surface_area() + cur-&gt;left-&gt;cost + cur-&gt;right-&gt;cost;
+                } else {
+                    // Only one side propagated
+                    break;
+                }
+            }
+            cur = cur-&gt;p;
+        }
+    }
+
+    // Cost of the root
+    BBox *bbox = &amp;root-&gt;bb;
+    merge_bounds(root-&gt;l-&gt;bb, root-&gt;r-&gt;bb, bbox);
+    // root-&gt;area = getArea(bound-&gt;min_x, bound-&gt;max_x, bound-&gt;min_y,
+    //     bound-&gt;max_y, bound-&gt;min_z, bound-&gt;max_z);
+    root-&gt;cost = Ct * root-&gt;bb-&gt;surface_area() + root-&gt;l-&gt;cost + root-&gt;r-&gt;cost;
+}
+</code></pre>
 
 <ul>
 <li>updateNewArea()</li>
