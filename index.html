@@ -179,6 +179,54 @@
 </code></pre>
 
 <ul>
+<li>rebuildBVH()
+
+<ul>
+<li>Input: the leaves and nodes of the current node</li>
+<li>Output: the rebuilt out structure of the current node</li>
+</ul>
+</li>
+</ul>
+
+<blockquote>
+<p>rebuild the BVH structure of the current node</p>
+</blockquote>
+
+<pre><code>void rebuildBVH(std::vector&lt;BVHNode *&gt;leaves, std::vector&lt;BVHNode *&gt;nodes, int num_leaves, bool left, BVHNode *parent) {
+
+    int i = leaves.length();
+    while (i &gt; 0) {
+        i--;
+            BVHNode *leaf = leaves[i];
+            if (left) {
+                parent-&gt;l = leaf;
+            } else {
+                parent-&gt;r = leaf;
+            }
+            leaf-&gt;p = parent;
+     }
+     j = nodes.length();
+     while(j &gt; 0)
+     {       
+            BVHNode *node = nodes[];
+
+            // Set cost to 0 as a mark
+            node-&gt;cost = 0.0;
+
+            if (left) {
+                parent-&gt;left = node;
+            } else {
+                parent-&gt;right = node;
+            }
+            node-&gt;parent = parent;    
+        }
+    }
+
+    updateCost(parent, leaves, num_leaves);
+}
+</code></pre>
+
+<ul>
 <li>updateNewArea()</li>
 </ul>
 
