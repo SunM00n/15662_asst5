@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Assignment 5: Advanced Monte Carlo Rendering by fishirenee</title>
+    <title>Assignment 5: Improve performance of BVH construction by fishirenee</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,8 +11,8 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Assignment 5: Advanced Monte Carlo Rendering</h1>
-      <h2 class="project-tagline">CMU 15-462/662 Assignment 5: Advanced Monte Carlo Rendering</h2>
+      <h1 class="project-name">Assignment 5: Improve performance of BVH construction</h1>
+      <h2 class="project-tagline">CMU 15-462/662 Assignment 5: Improve performance of BVH construction</h2>
       <a href="https://github.com/fishirenee/15662_asst5" class="btn">View on GitHub</a>
       <a href="https://github.com/fishirenee/15662_asst5/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/fishirenee/15662_asst5/tarball/master" class="btn">Download .tar.gz</a>
@@ -20,41 +20,18 @@
 
     <section class="main-content">
       <h2>
-<a id="option-f-advanced-monte-carlo-rendering" class="anchor" href="#option-f-advanced-monte-carlo-rendering" aria-hidden="true"><span class="octicon octicon-link"></span></a>Option F: Advanced Monte Carlo Rendering</h2>
+<a id="final-project-improve-performance-of-bvh-construction" class="anchor" href="#final-project-improve-performance-of-bvh-construction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Final Project: Improve performance of BVH construction</h2>
 
-<p><img src="http://15462.courses.cs.cmu.edu/fall2015content/misc/asst5_images/advancedrendering.png" alt="Advanced rendering example"></p>
+<p>For the final project. My topic is option F: Advanced Monte Carlo Rendering. And the track I implemented is improving the performance of the BVH path tracing. I followed the article “Fast Parallel Construction of High-Quality Bounding Volume Hierarchies”. However, I tried to realized a Parallel construction system but the thing I need to learn for the first time is not within the time limitation and my learning ability.. So I didn’t realize the full function out.</p>
 
-<p>Finally, you could extend the physically-based renderer you started to develop for your third assignment—as you experienced first-hand, the basic path tracing algorithm does not converge very quickly!  It also doesn't capture some important (and beautiful!) physical phenomena.  Here are several specific suggestions for directions you might pursue:</p>
+<p>I will introduce about the functions I have for now. The performance improving functions are based on the assignment 3. And currently all the works are in the bvh.cpp.</p>
 
-<ul>
-<li>
-<em>Improve performance of BVH construction.</em>  For large and/or dynamic scenes, the cost of building a bounding volume hierarchy is specific.  Consider, for instance, running a large, mesh-based physical simulation of water, which you then want to ray trace in order to get beautiful caustics.  Lots of geometry changing in unpredictable ways—and <em>millions</em> of rays to properly resolve the appearance of the surface.  You could improve the performance of your renderer by implementing one of the the top modern parallel BVH build algorithms such as
+<p>Since we already have a basic BVH structure really from assignment 3. I started with it and tried to form the treelet structure according to the article. The overall idea is to set the number of leaf node to 7 and the internal node number to 5. While traveling through the original BVH tree. Reset the relationship of the internal node according to the SAH of every possible internal node arrangement. And let the smallest cost one to be the final internal node arrangement. While keep the relationship of the internal node and the corresponding leaf nodes.</p>
 
-<ul>
-<li><a href="http://graphics.cs.cmu.edu/projects/aac/">Efficient BVH Construction via Approximate Agglomerative Clustering</a></li>
-<li><a href="https://research.nvidia.com/publication/fast-parallel-construction-high-quality-bounding-volume-hierarchies">Fast Parallel Construction of High-Quality Bounding Volume Hierarchies</a></li>
-</ul>
-</li>
-<li>
-<em>Improve performance of ray tracing.</em>  There are also plenty of opportunities to improve the performance of the ray tracing itself.  One possibility is to implement fast packet-based ray tracing a la the method described in, <a href="http://graphics.stanford.edu/%7Eboulos/papers/togbvh.pdf">"Ray Tracing Deformable Scenes using Dynamic Bounding Volume Hierarchies"</a>.</li>
-<li>
-<em>Implement an advanced global sampling algorithm.</em> A very different way to reduce the cost of rendering an image is to improve the sampling strategy.  In other words, since each ray can be very expensive to intersect with the scene, it makes sense to put some effort into finding paths that are likely to carry a lot of "light."  The ultimate goal is to "beat the clock," i.e., your fancy strategy should not only give better estimates of the integral as a function of number of rays cast, but it should really decrease the overall render time for a fixed target level of noise (i.e., an estimate of the variance of your estimator).  We discussed a number of these methods in our <em>Advanced Rendering and Sampling</em> lecture; a few you might consider are given in the following list (many of these methods are excellently described in the <a href="http://www.pbrt.org">PBRT book</a>):
-
-<ul>
-<li><a href="https://en.wikipedia.org/wiki/Path_tracing#Bidirectional_path_tracing">bidirectional path tracing</a></li>
-<li><a href="https://en.wikipedia.org/wiki/Photon_mapping">Photon mapping</a></li>
-<li>
-<a href="https://graphics.stanford.edu/papers/metro/">Metropolis light transport</a>—this method is quite advanced, though the <a href="http://sirkan.iit.bme.hu/%7Eszirmay/paper50_electronic.pdf">"hypercube" picture</a> we discussed in class can make it a bit easier to implement.</li>
-</ul>
-</li>
-<li>
-<em>Improved sampling patterns</em>. We also discussed a variety of strategies for picking more intelligent sampling patterns (stratified sampling, low-discrepancy, blue noise, etc.).  You could implement a variety of strategies and, like the previous item, compare the estimated variance of the estimator relative to the wall clock time used to render.</li>
-<li>
-<em>Irradiance caching</em>.  A method that is extremely important in practice (i.e., almost all "real" renderers use it) but that we didn't have a chance to discuss in class is <em>irradiance caching</em>.  In a nutshell the idea is to say: if illumination is varying slowly, you sometimes get away with interpolating existing samples rather than generating new ones.  Exactly <em>how</em> you generate these samples (and how you interpolate them) is critical to getting good results, and plenty has been written on the subject.  But even a basic irradiance caching strategy could greatly improve the utility of your renderer, in the sense that you can get far smoother images with far fewer samples.</li>
-</ul>
+<p>I have the following functions to realize the thought above:</p>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/fishirenee/15662_asst5">Assignment 5: Advanced Monte Carlo Rendering</a> is maintained by <a href="https://github.com/fishirenee">fishirenee</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/fishirenee/15662_asst5">Assignment 5: Improve performance of BVH construction</a> is maintained by <a href="https://github.com/fishirenee">fishirenee</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
