@@ -22,17 +22,16 @@
       <h2>
 <a id="final-project-improve-performance-of-bvh-construction" class="anchor" href="#final-project-improve-performance-of-bvh-construction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Final Project: Improve performance of BVH construction</h2>
 
-<p>For the final project. My topic is option F: Advanced Monte Carlo Rendering. And the track I implemented is improving the performance of the BVH path tracing. I followed the article “Fast Parallel Construction of High-Quality Bounding Volume Hierarchies”. However, I tried to realized a Parallel construction system but the thing I need to learn for the first time is not within the time limitation and my learning ability.. So I didn’t realize the full function out.</p>
+<p>My topic for the final project is option F: Advanced Monte Carlo Rendering. And the track I implemented is improving the performance of the BVH path tracing. I followed the article <em>“Fast Parallel Construction of High-Quality Bounding Volume Hierarchies”</em>. However, I tried to realize a Parallel construction system but since I'm new to the area I didn't make it. So I didn’t realize the full function out.</p>
 
-<p>I will introduce about the functions I have for now. The performance improving functions are based on the assignment 3. And currently all the works are in the bvh.cpp.</p>
+<p>I will introduce the functions I have for now. The performance improving functions are based on the assignment 3. And currently all the works are done in the bvh.cpp.</p>
 
-<p>Since we already have a basic BVH structure really from assignment 3. I started with it and tried to form the treelet structure according to the article. The overall idea is to set the number of leaf node to 7 and the internal node number to 5. While traveling through the original BVH tree. Reset the relationship of the internal node according to the SAH of every possible internal node arrangement. And let the smallest cost one to be the final internal node arrangement. While keep the relationship of the internal node and the corresponding leaf nodes.</p>
+<p>Since we already have a basic BVH structure ready from assignment 3. I started with it and tried to form the treelet structure according to the article. The overall idea is: For each node, set the number of leaf node to 7 and the internal node number to 5. While traveling through the original BVH tree. Rearrange the relationship of the "internal node" according to the new SAH cost of every possible arrangement. And let the smallest cost one to be the final internal node arrangement, keeping the relationship of the internal node and the corresponding leaf nodes.</p>
 
 <p>I have the following functions to realize the thought above:</p>
 
 <ul>
-<li>
-<p>getArea() </p>
+<li>getArea() 
 
 <ul>
 <li>Input: the maximum and minimum value of the vertex.</li>
@@ -43,6 +42,7 @@
 
 <blockquote>
 <p>get the surface area of the bounding box according to the diagonal line’s vertex.</p>
+</blockquote>
 
 <pre><code>double getArea(double min_x, double max_x, double min_y, double max_y, double min_z, double max_z) {
   double dx = max_x - min_x;
@@ -53,16 +53,18 @@
 </code></pre>
 
 <ul>
-<li>mergeBox()</li>
-</ul>
-</blockquote>
+<li>mergeBox()
 
-<pre><code>* Input: bounding box1, bounding box2, bounding box3
-* Output: void
-</code></pre>
+<ul>
+<li>Input: bounding box1, bounding box2, bounding box3</li>
+<li>Output: void</li>
+</ul>
+</li>
+</ul>
 
 <blockquote>
 <p>reset the bounding box3’s attributes using the smallest and largest attributes from bounding box1 and bounding box2.</p>
+</blockquote>
 
 <pre><code>void mergeBox(BBox&amp; b1, BBox&amp; b2, BBox* b3) {
    b3-&gt;min.x = std::min(b1.min.x, b2.min.x);
@@ -76,12 +78,8 @@
 </code></pre>
 
 <ul>
-<li>getTreelet()</li>
-</ul>
-</blockquote>
-
-<ul>
-<li>updateNewCost()</li>
+<li><p>getTreelet()</p></li>
+<li><p>updateNewCost()</p></li>
 </ul>
 
 <p>Input: root of the BVH
