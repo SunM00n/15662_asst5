@@ -30,6 +30,54 @@
 
 <p>I have the following functions to realize the thought above:</p>
 
+<p>*getArea() </p>
+
+<p>Input:
+Output:</p>
+
+<blockquote>
+<p>get the surface area of the bounding box according to the diagonal line’s vertex.</p>
+</blockquote>
+
+<p><code>double BVHAccel::getArea(double min_x, double max_x, double min_y, double max_y, double min_z, double max_z) {</code>
+  <code>double dx = max_x - min_x;</code>
+  <code>double dy = max_y - min_y;</code>
+  <code>double dz = max_z - min_z;</code>
+  <code>return 2 * (dx * dy + dx * dz + dy * dz);</code>
+<code>}</code></p>
+
+<p>*mergeBox()</p>
+
+<p>Input: bounding box1, bounding box2, bounding box3
+Output: void</p>
+
+<p>reset the bounding box3’s attributes using the smallest and largest attributes from bounding box1 and bounding box2.</p>
+
+<p>*getTreelet()</p>
+
+<p>*updateNewCost()</p>
+
+<p>Input: root of the BVH
+Output: void</p>
+
+<p>for all the node in the tree
+    calculate the cost of each node according to it's children's cost
+end</p>
+
+<p>*updateNewArea()</p>
+
+<p>Input: root of the BVH
+Output: void</p>
+
+<p>for all the node in the tree
+    calculate the area of each leaf node
+    let the parent internal node go to lower level 
+end</p>
+
+<p>*rebuiltBVH()</p>
+
+<p>*treeletOptimize()</p>
+
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/fishirenee/15662_asst5">Assignment 5: Improve performance of BVH construction</a> is maintained by <a href="https://github.com/fishirenee">fishirenee</a>.</span>
 
