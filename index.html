@@ -53,6 +53,48 @@
 </code></pre>
 
 <ul>
+<li>getTotalArea()
+
+<ul>
+<li>Input: the leaves of the node and the number of the leaves</li>
+<li>Output: the total bounding box area of the leaves</li>
+</ul>
+</li>
+</ul>
+
+<blockquote>
+<p>get the total area of the bounding box of the leaves</p>
+</blockquote>
+
+<pre><code>double getTotalArea(int n, std::vector&lt;BVHNode *&gt; leaves) {
+  double lmin_x, lmin_y, lmin_z, lmax_x, lmax_y, lmax_z;
+  double min_x = INF_D;
+  double max_x = -INF_D;
+  double min_y = INF_D;
+  double max_y = -INF_D;
+  double min_z = INF_D;
+  double max_z = -INF_D; 
+  for (int i = 0; i &lt; n; i++) {
+    // if ((s &gt;&gt; i) &amp; 1 == 1) {
+    lmin_x = leaves[i]-&gt;bb.min.x;
+    lmin_y = leaves[i]-&gt;bb.min.y;
+    lmin_z = leaves[i]-&gt;bb.min.z;
+    lmax_x = leaves[i]-&gt;bb.max.x;
+    lmax_y = leaves[i]-&gt;bb.max.y;
+    lmax_z = leaves[i]-&gt;bb.max.z;
+    if (lmin_x &lt; min_x) min_x = lmin_x;
+    if (lmin_y &lt; min_y) min_y = lmin_y;
+    if (lmin_z &lt; min_z) min_z = lmin_z;
+    if (lmax_x &gt; max_x) max_x = lmax_x;
+    if (lmax_y &gt; max_y) max_y = lmax_y;
+    if (lmax_z &gt; max_z) max_z = lmax_z;
+    // }
+  } 
+  return getArea(min_x, max_x, min_y, max_y, min_z, max_z);
+}
+</code></pre>
+
+<ul>
 <li>mergeBox()
 
 <ul>
@@ -149,7 +191,6 @@
 </blockquote>
 
 <pre><code>void updateCost(BVHNode *root, std::vector&lt;BVHNode *&gt;leaves, int num_leaves) {
-
     for (int i = 0; i &lt; num_leaves; i++) {
         BVHNode *cur = leaves[i];
         cur = cur-&gt;p;
@@ -172,8 +213,6 @@
     // Cost of the root
     BBox *bbox = &amp;root-&gt;bb;
     merge_bounds(root-&gt;l-&gt;bb, root-&gt;r-&gt;bb, bbox);
-    // root-&gt;area = getArea(bound-&gt;min_x, bound-&gt;max_x, bound-&gt;min_y,
-    //     bound-&gt;max_y, bound-&gt;min_z, bound-&gt;max_z);
     root-&gt;cost = Ct * root-&gt;bb-&gt;surface_area() + root-&gt;l-&gt;cost + root-&gt;r-&gt;cost;
 }
 </code></pre>
@@ -193,55 +232,111 @@
 </blockquote>
 
 <pre><code>void rebuildBVH(std::vector&lt;BVHNode *&gt;leaves, std::vector&lt;BVHNode *&gt;nodes, int num_leaves, bool left, BVHNode *parent) {
-
     int i = leaves.length();
     while (i &gt; 0) {
-        i--;
-            BVHNode *leaf = leaves[i];
-            if (left) {
-                parent-&gt;l = leaf;
-            } else {
-                parent-&gt;r = leaf;
-            }
-            leaf-&gt;p = parent;
-     }
-     j = nodes.length();
-     while(j &gt; 0)
-     {       
-            BVHNode *node = nodes[];
-
-            // Set cost to 0 as a mark
-            node-&gt;cost = 0.0;
-
-            if (left) {
-                parent-&gt;left = node;
-            } else {
-                parent-&gt;right = node;
-            }
-            node-&gt;parent = parent;    
-        }
+      i--;
+      BVHNode *leaf = leaves[i];
+      if (left) {
+        parent-&gt;l = leaf;
+      } else {
+        parent-&gt;r = leaf;
+      }
+        leaf-&gt;p = parent;
     }
-
+    int j = nodes.length();
+    while(j &gt; 0)
+    {       
+       BVHNode *node = nodes[];
+       node-&gt;cost = 0.0;
+       if (left) {
+         parent-&gt;left = node;
+       } else {
+         parent-&gt;right = node;
+       }
+         node-&gt;parent = parent;    
+    }
     updateCost(parent, leaves, num_leaves);
 }
 </code></pre>
 
 <ul>
-<li>updateNewArea()</li>
-</ul>
-
-<p>Input: root of the BVH
-Output: void</p>
-
-<p>for all the node in the tree
-    calculate the area of each leaf node
-    let the parent internal node go to lower level 
-end</p>
+<li>treeletOptimize()
 
 <ul>
-<li><p>rebuiltBVH()</p></li>
-<li><p>treeletOptimize()</p></li>
+<li>Input: current node</li>
+<li>Output: void</li>
 </ul>
+</li>
+</ul>
+
+<blockquote>
+<p>Optimize the treelet structure of the current node</p>
+</blockquote>
+
+<pre><code>void treeletOptimize(BVHNode *root) {
+    if (root-&gt;isLeaf()) return;
+
+    // Find a treelet with max number of leaves being 7
+    std::vector&lt;BVHNode *&gt;leaves(7);
+    int counter = 0;
+    leaves[counter++] = root-&gt;l;
+    leaves[counter++] = root-&gt;r;
+
+    std::vector&lt;BVHNode *&gt;nodes(5);
+    int nodes_counter = 0;
+
+    double max_area;
+    int max_index = 0;
+
+    while (counter &lt; 7 &amp;&amp; max_index != -1) {
+        max_index = -1;
+        max_area = -1.0;
+
+        for (int i = 0; i &lt; counter; i++) {
+            if (!(leaves[i]-&gt;leaf)) {
+                float area = leaves[i]-&gt;area;
+                if (area &gt; max_area) {
+                    max_area = area;
+                    max_index = i;
+                }
+            }
+        }
+
+        if (max_index != -1) {
+
+            BVHNode *tmp = leaves[max_index];
+
+            // Put this node in nodes array
+            nodes[nodes_counter++] = tmp;
+
+            // Replace the max node with its children
+            leaves[max_index] = leaves[counter - 1];
+            leaves[counter - 1] = tmp-&gt;l;
+            leaves[counter++] = tmp-&gt;r;
+        }
+    }
+
+    unsigned char optimal[128];
+
+    // Call calculateOptimalCost here
+    optimizeTreelet(counter, leaves);
+
+    // Use complement on right tree, and use original on left tree
+    unsigned char mask = (1 &lt;&lt; counter) - 1;    // mask = max index
+    int index = 0;                              // index for free nodes
+    unsigned char leftIndex = mask;
+    unsigned char left = optimal[leftIndex];
+    rebuildBVH(leaves, nodes, left, counter, root);
+
+    unsigned char right = (~left) &amp; mask;
+    rebuildTree(leaves, nodes, right, counter, root);
+
+    // Calculate current node's area &amp; cost
+    BBox *bound = &amp;root-&gt;bb;
+    mergeBox(root-&gt;l-&gt;bb, root-&gt;r-&gt;bb, bound);
+    root-&gt;cost = Ci * root-&gt;bb-&gt;getArea() + root-&gt;l-&gt;cost + root-&gt;r-&gt;cost;
+}
+</code></pre>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/fishirenee/15662_asst5">Assignment 5: Improve performance of BVH construction</a> is maintained by <a href="https://github.com/fishirenee">fishirenee</a>.</span>
