@@ -78,8 +78,60 @@
 </code></pre>
 
 <ul>
-<li><p>getTreelet()</p></li>
-<li><p>updateNewCost()</p></li>
+<li>optimizeTreelet()
+
+<ul>
+<li>Input: the number of the leaves</li>
+<li>Output: void
+&gt; rearrange the leaves' partition to get the smallest cost arrangement</li>
+</ul>
+</li>
+</ul>
+
+<pre><code>void optimizeTreelet(int n, std::vector&lt;BVHNode *&gt; leaves) {
+  int num_subsets = pow(2, n) - 1;
+
+  double area[128];
+  double c_opt[128];
+
+  // Calculate surface area for each subset
+  for (int s = 1; s &lt;= num_subsets; s++) {
+    area[s] = get_total_area(n, leaves, s);
+  }
+
+  // Initialize costs of individual leaves
+  for (int i = 0; i &lt;= (n-1); i++) {
+    c_opt[pow(2, i)] = leaves[i]-&gt;cost;
+  }
+
+  // Optimize every arrangement of leaves
+  for (unsigned k = 2; k &lt;= n; k++) {
+    for (unsigned char s = 1; s &lt;= num_subsets; s++) {
+        // Try each way of partitioning the leaves
+        double c_s = INF_D;
+        unsigned char p_s = 0;
+        unsigned char d = (s - 1) &amp; s;
+        unsigned char p = (-d) &amp; s;
+        while (p != 0) {
+          float c = c_opt[p] + c_opt[s ^ p];
+          if (c &lt; c_s) {
+              c_s = c;
+              p_s = p;
+          }
+
+          p = (p - d) &amp; s;
+        }
+        // Calculate final SAH cost
+        c_opt[s] = 1.2 * a[s] + c_s;
+        p_opt[s] = p_s;
+      }
+    }
+  }
+}
+</code></pre>
+
+<ul>
+<li>updateNewCost()</li>
 </ul>
 
 <p>Input: root of the BVH
